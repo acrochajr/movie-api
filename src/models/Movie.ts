@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes, ModelStatic, Model } from "sequelize";
 
+// Define a interface 'IMovie' que é usada para tipar os dados do CSV
 export interface IMovie {
   year: string;
   title: string;
