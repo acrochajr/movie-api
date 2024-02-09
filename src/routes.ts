@@ -1,15 +1,17 @@
 import { Router } from "express";
-import { getProducerWithMinMaxInterval } from "./controllers/movieController";
-import { uploadAndProcessCSV } from "./services/uploadService";
+import { moviesList, getIntervals } from "./controllers/movieController";
+// import { uploadAndProcessCSV } from "./services/processService";
+
+/*
+ * Inicialmente tinha feito a importacao do arquivo via upload, depois relendo
+ * o enunciado percebi que nao era necessario, entao comentei a importacao e rota
+ */
 
 export const router = Router();
+// Rota para fazer upload e processar o arquivo CSV , comentado pois nao era necessario.
+// router.post("/upload", uploadAndProcessCSV);
 
-router.post("/upload", uploadAndProcessCSV, (req, res) => {
-  try {
-    res.send("Arquivo CSV recebido com sucesso!");
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
-
-router.get("/producers/minmax-interval", getProducerWithMinMaxInterval);
+// Rota para retornar todos os filmes
+router.get("/getall", moviesList);
+// Rota para retornar os intervalos
+router.get("/intervals", getIntervals);

@@ -1,50 +1,77 @@
-// import { parse } from "some-csv-parsing-library";
+import { sequelize } from "../config/db";
+import { initMovie } from "../models/movie";
+import { IMovie } from "../models/movie";
 
-// interface Movie {
-//   // Defina as propriedades de acordo com o seu arquivo CSV
-//   year: number;
-//   title: string;
-//   studio: string;
-//   producer: string;
-//   winner: boolean;
-// }
+// Define o tipo de intervalos
+interface Intervals {
+  producer: string;
+  interval: number;
+  previousWin: number;
+  followingWin: number;
+}
+//  Inicializa o modelo de filme
+const MovieModel = initMovie(sequelize);
+// Retorna todos os filmes
+export const getAllMovies = async (): Promise<any[]> => {
+  return MovieModel.findAll();
+};
+// Retorna todos os filmes vencedores
+const getWinnerMovies = async (): Promise<any[]> => {
+  return MovieModel.findAll({ where: { winner: "yes" } });
+};
 
-// interface ProducerInterval {
-//   producer: string;
-//   interval: number;
-//   previousWin: number;
-//   followingWin: number;
-// }
+export const findProducers = async (): Promise<{
+  maxIntervals: Intervals[];
+  minIntervals: Intervals[];
+}> => {
+  const movies = await getWinnerMovies();
+  let producers: { [key: string]: number[] } = {};
 
-// export const getProducerWithMinMaxIntervalService = async (): Promise<{
-//   max: ProducerInterval;
-//   min: ProducerInterval;
-// }> => {
-//   // Leia e analise o arquivo CSV
-//   const movies: Movie[] = await parseCSVFile("path/to/your/file.csv");
+  // Busca os produtores dos filmes vencedores
+  movies.forEach((movie) => {
+    if (movie.winner === "yes") {
+      const producersList = movie.producers.split(", ");
+      producersList.forEach((producer: any) => {
+        if (!producers[producer]) {
+          producers[producer] = [];
+        }
+        producers[producer].push(movie.year);
+      });
+    }
+  });
+  // Calcula os intervalos
+  let maxIntervals: Intervals[] = [];
+  let minIntervals: Intervals[] = [];
+  let maxIntervalValue = 0;
+  let minIntervalValue = Infinity;
 
-//   // Processar os dados para calcular os intervalos
-//   const intervals = calculateIntervals(movies);
+  Object.keys(producers).forEach((producer) => {
+    producers[producer].sort();
+    // Calcula os intervalos no formato de objeto como requisitado no teste
+    for (let i = 1; i < producers[producer].length; i++) {
+      let interval = producers[producer][i] - producers[producer][i - 1];
+      let intervalData: Intervals = {
+        producer: producer,
+        interval: interval,
+        previousWin: producers[producer][i - 1],
+        followingWin: producers[producer][i],
+      };
 
-//   // Encontrar os produtores com os maiores e menores intervalos
-//   const maxInterval = findMaxInterval(intervals);
-//   const minInterval = findMinInterval(intervals);
+      if (interval > maxIntervalValue) {
+        maxIntervalValue = interval;
+        maxIntervals = [intervalData];
+      } else if (interval === maxIntervalValue) {
+        maxIntervals.push(intervalData);
+      }
 
-//   return { max: maxInterval, min: minInterval };
-// };
-
-// const parseCSVFile = async (filePath: string): Promise<Movie[]> => {
-//   // Implementar a lógica de leitura e análise do CSV
-// };
-
-// const calculateIntervals = (movies: Movie[]): ProducerInterval[] => {
-//   // Implementar a lógica para calcular os intervalos
-// };
-
-// const findMaxInterval = (intervals: ProducerInterval[]): ProducerInterval => {
-//   // Implementar a lógica para encontrar o maior intervalo
-// };
-
-// const findMinInterval = (intervals: ProducerInterval[]): ProducerInterval => {
-//   // Implementar a lógica para encontrar o menor intervalo
-// };
+      if (interval < minIntervalValue && interval > 0) {
+        minIntervalValue = interval;
+        minIntervals = [intervalData];
+      } else if (interval === minIntervalValue) {
+        minIntervals.push(intervalData);
+      }
+    }
+  });
+  // Retorna os intervalos
+  return { maxIntervals, minIntervals };
+};
