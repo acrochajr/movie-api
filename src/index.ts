@@ -6,7 +6,7 @@ import { router as movieRouter } from "./routes";
 import fs from "fs";
 
 const app = express();
-const port = 3000;
+// const port = 3000;
 // Inicializa o modelo de filme
 initMovie(sequelize);
 // Sincroniza o modelo com o banco de dados
@@ -40,6 +40,8 @@ app.use(express.json());
 // Adiciona as rotas
 app.use("/movies", movieRouter);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
+
+export default app;

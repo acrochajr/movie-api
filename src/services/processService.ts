@@ -11,7 +11,7 @@ import { CSVData } from "../models/cvs";
 const MovieModel = initMovie(sequelize);
 // Processa o arquivo CSV em um buffer
 export const processCSV = async (fileBuffer: Buffer): Promise<void> => {
-  console.log("Processing CSV file...", fileBuffer.toString("utf-8"));
+  // console.log("Processing CSV file...", fileBuffer?.toString("utf-8"));
 
   const promises: Promise<any>[] = [];
   // Recebe os erros

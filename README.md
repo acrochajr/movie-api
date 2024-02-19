@@ -24,7 +24,8 @@ Para começar o projeto, siga estas etapas:
     ```
 
 3.  Inicie o servidor, esta configurado para rodar a porta "3000":
-    ```
+
+    ````
     npm run start
 
         ```
@@ -36,6 +37,8 @@ Para começar o projeto, siga estas etapas:
 
         ```
         Inicia  a versão dev com nodemon.
+
+    ````
 
 4.  Testando as rotas
 
@@ -55,4 +58,10 @@ B. Filmes com intervalos entre prêmios.
 ```
 Get: http://localhost:3000/movies/intervals
 
+```
+
+5. Execultando testes de importação e retorno de dados, arquivo localizado no diretorio src "test.ts"
+
+```
+npm run test
 ```
