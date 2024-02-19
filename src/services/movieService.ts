@@ -21,8 +21,8 @@ const getWinnerMovies = async (): Promise<any[]> => {
 };
 
 export const findProducers = async (): Promise<{
-  maxIntervals: Intervals[];
-  minIntervals: Intervals[];
+  max: Intervals[];
+  min: Intervals[];
 }> => {
   const movies = await getWinnerMovies();
   let producers: { [key: string]: number[] } = {};
@@ -30,7 +30,8 @@ export const findProducers = async (): Promise<{
   // Busca os produtores dos filmes vencedores
   movies.forEach((movie) => {
     if (movie.winner === "yes") {
-      const producersList = movie.producers.split(", ");
+      const normalizeProducer = movie.producers.replace(/ and /g, ", ");
+      const producersList = normalizeProducer.split(", ");
       producersList.forEach((producer: any) => {
         if (!producers[producer]) {
           producers[producer] = [];
@@ -40,8 +41,8 @@ export const findProducers = async (): Promise<{
     }
   });
   // Calcula os intervalos
-  let maxIntervals: Intervals[] = [];
-  let minIntervals: Intervals[] = [];
+  let max: Intervals[] = [];
+  let min: Intervals[] = [];
   let maxIntervalValue = 0;
   let minIntervalValue = Infinity;
 
@@ -59,19 +60,19 @@ export const findProducers = async (): Promise<{
 
       if (interval > maxIntervalValue) {
         maxIntervalValue = interval;
-        maxIntervals = [intervalData];
+        max = [intervalData];
       } else if (interval === maxIntervalValue) {
-        maxIntervals.push(intervalData);
+        max.push(intervalData);
       }
 
       if (interval < minIntervalValue && interval > 0) {
         minIntervalValue = interval;
-        minIntervals = [intervalData];
+        min = [intervalData];
       } else if (interval === minIntervalValue) {
-        minIntervals.push(intervalData);
+        min.push(intervalData);
       }
     }
   });
   // Retorna os intervalos
-  return { maxIntervals, minIntervals };
+  return { min, max };
 };
